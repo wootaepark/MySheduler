@@ -1,8 +1,8 @@
 package com.sparta.myscheduler.controller;
 
 
-import com.sparta.myscheduler.dto.ScheduleRequestDto;
-import com.sparta.myscheduler.dto.ScheduleResponseDto;
+import com.sparta.myscheduler.dto.schedule.ScheduleRequestDto;
+import com.sparta.myscheduler.dto.schedule.ScheduleResponseDto;
 import com.sparta.myscheduler.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
