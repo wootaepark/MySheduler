@@ -23,15 +23,25 @@ public class CommentController {
                 body(commentService.createComment(requestDto));
     }
 
-    @GetMapping("/comment/{scheduleId}")
-    public ResponseEntity<List<CommentResponseDto>> getComments(@PathVariable Long scheduleId) {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments(scheduleId));
+    @GetMapping("/comment")
+    public ResponseEntity<List<CommentResponseDto>> getComments(@RequestParam(required = false) Long scheduleId) {
+        if(scheduleId != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments(scheduleId));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllComments());
+
     }
 
-    /*@PutMapping("/comment/{commentId}")
-    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long commentId, @RequestBody CommentRequestDto requestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(commentId, requestDto));
-    }*/
+    @PutMapping("/comment/{id}")
+    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long id,@RequestBody CommentRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(id, requestDto));
+    }
+
+    @DeleteMapping("/comment/{id}")
+    public ResponseEntity<Long> deleteComment(@PathVariable Long id) {
+        commentService.deleteComment(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
 
 

@@ -40,12 +40,31 @@ public class CommentService {
         return schedule.getComments().stream().map(CommentResponseDto::new).toList();
     }
 
+    @Transactional
+    public List<CommentResponseDto> getAllComments() {
+        List<Comment> comments = commentRepository.findAll(); // 모든 댓글을 가져옴
+        return comments.stream().map(CommentResponseDto::new).toList();
+    }
 
+    @Transactional
+    public CommentResponseDto updateComment(Long id, CommentRequestDto requestDto) {
+        Comment comment = commentRepository.findById(id).
+                orElseThrow(() -> new RuntimeException("Comment id " + id + "not found"));
+        comment.update(requestDto);
+        return new CommentResponseDto(commentRepository.save(comment));
+    }
+
+
+
+    public void deleteComment(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment id " + id + "not found"));
+        commentRepository.delete(comment);
+    }
 
     private Schedule findScheduleById(Long id) {
         return scheduleRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("Schedule id : " + id  + " not found")
         );
     }
-
 }
