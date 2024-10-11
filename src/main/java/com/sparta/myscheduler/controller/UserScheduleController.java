@@ -1,12 +1,14 @@
 package com.sparta.myscheduler.controller;
 
 import com.sparta.myscheduler.dto.userSchedule.UserScheduleRequestDto;
+import com.sparta.myscheduler.dto.userSchedule.UserScheduleResponseDto;
 import com.sparta.myscheduler.service.UserScheduleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +19,21 @@ public class UserScheduleController {
 
 
     @PostMapping("/userSchedule")
-    public void createUserSchedule(@RequestBody UserScheduleRequestDto requestDto) {
-        userScheduleService.createUserSchedule(requestDto);
+    public ResponseEntity<UserScheduleResponseDto> createUserSchedule(@RequestBody UserScheduleRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                        .body( userScheduleService.createUserSchedule(requestDto));
     };
+
+    @GetMapping("/userSchedule")
+    public ResponseEntity<List<UserScheduleResponseDto>> getUserSchedule() {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userScheduleService.getUserSchedule());
+    }
+
+    @DeleteMapping("/userSchedule")
+    public ResponseEntity<Long> deleteUserSchedule(@RequestBody UserScheduleRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(userScheduleService.deleteUserSchedule(requestDto));
+    }
 
 }
