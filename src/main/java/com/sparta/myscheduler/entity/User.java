@@ -30,7 +30,7 @@ public class User extends Timestamped{
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user",cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList<>();
 
 
@@ -45,5 +45,8 @@ public class User extends Timestamped{
     }
 
 
-
+    public void update(UserRequestDto requestDto) {
+        this.username = requestDto.getUsername();
+        this.email = requestDto.getEmail();
+    }
 }
