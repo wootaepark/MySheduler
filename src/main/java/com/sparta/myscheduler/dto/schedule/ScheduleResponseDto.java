@@ -28,8 +28,16 @@ public class ScheduleResponseDto {
         this.updatedAt = schedule.getUpdatedAt();
     }
 
+    public ScheduleResponseDto( Long id, String title, String content, LocalDate scheduleDate,
+                               LocalDateTime createdAt, LocalDateTime updatedAt) {
 
-
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.scheduleDate = scheduleDate;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
 
 }

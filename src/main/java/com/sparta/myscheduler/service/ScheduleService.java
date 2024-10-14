@@ -6,10 +6,12 @@ import com.sparta.myscheduler.entity.Schedule;
 import com.sparta.myscheduler.repository.CommentRepository;
 import com.sparta.myscheduler.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +24,17 @@ public class ScheduleService {
         return new ScheduleResponseDto(scheduleRepository.save(new Schedule(requestDto)));
     }
 
-    public List<ScheduleResponseDto> getSchedule() {
-        return scheduleRepository.findAll().stream().map(ScheduleResponseDto::new).toList();
+    public Page<ScheduleResponseDto> getSchedule(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("updatedAt").descending());
+        return scheduleRepository.findAll(pageable)
+                .map(schedule -> new ScheduleResponseDto(
+                        schedule.getId(),
+                        schedule.getTitle(),
+                        schedule.getContent(),
+                        schedule.getScheduleDate(),
+                        schedule.getCreatedAt(),
+                        schedule.getUpdatedAt()
+                ));
     }
 
     public ScheduleResponseDto getSchedule(Long id) {
@@ -48,7 +59,7 @@ public class ScheduleService {
 
     private Schedule findScheduleById(Long id) {
         return scheduleRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Schedule id : " + id  + " not found")
+                () -> new IllegalArgumentException("Schedule id : " + id + " not found")
         );
     }
 }

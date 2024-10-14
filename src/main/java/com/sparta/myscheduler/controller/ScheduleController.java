@@ -5,11 +5,10 @@ import com.sparta.myscheduler.dto.schedule.ScheduleRequestDto;
 import com.sparta.myscheduler.dto.schedule.ScheduleResponseDto;
 import com.sparta.myscheduler.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -27,8 +26,10 @@ public class ScheduleController {
 
     // 일정 모두 보기 api
     @GetMapping("/schedule")
-    public ResponseEntity<List<ScheduleResponseDto>> getSchedule() {
-        return ResponseEntity.ok(scheduleService.getSchedule());
+    public ResponseEntity<Page<ScheduleResponseDto>> getSchedule(
+            @RequestParam (required = false, defaultValue = "0") int page,
+            @RequestParam (required = false, defaultValue = "10") int size){
+        return ResponseEntity.ok(scheduleService.getSchedule(page, size));
     }
 
     // 특정 일정 보기 api
