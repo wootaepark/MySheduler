@@ -3,6 +3,7 @@ package com.sparta.myscheduler.controller;
 import com.sparta.myscheduler.dto.user.UserRequestDto;
 import com.sparta.myscheduler.dto.user.UserResponseDto;
 import com.sparta.myscheduler.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/user")
-    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto requestDto){
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto requestDto){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUser(requestDto));
     }
@@ -36,7 +37,7 @@ public class UserController {
     }
 
     @PutMapping("/user/{id}") // 특정 유저 정보 수정
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody UserRequestDto requestDto){
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDto requestDto){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.updateUser(id, requestDto));
     }

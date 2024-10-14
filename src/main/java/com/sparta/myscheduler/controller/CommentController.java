@@ -3,6 +3,7 @@ package com.sparta.myscheduler.controller;
 import com.sparta.myscheduler.dto.comment.CommentRequestDto;
 import com.sparta.myscheduler.dto.comment.CommentResponseDto;
 import com.sparta.myscheduler.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/comment")
-    public ResponseEntity<CommentResponseDto> createComment(@RequestBody CommentRequestDto requestDto) {
+    public ResponseEntity<CommentResponseDto> createComment(@Valid @RequestBody CommentRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).
                 body(commentService.createComment(requestDto));
     }
@@ -33,7 +34,7 @@ public class CommentController {
     }
 
     @PutMapping("/comment/{id}")
-    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long id,@RequestBody CommentRequestDto requestDto) {
+    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long id, @Valid @RequestBody CommentRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(id, requestDto));
     }
 

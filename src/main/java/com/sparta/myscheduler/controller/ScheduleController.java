@@ -4,6 +4,7 @@ package com.sparta.myscheduler.controller;
 import com.sparta.myscheduler.dto.schedule.ScheduleRequestDto;
 import com.sparta.myscheduler.dto.schedule.ScheduleResponseDto;
 import com.sparta.myscheduler.service.ScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class ScheduleController {
 
     // 일정 등록 api
     @PostMapping("/schedule")
-    public ResponseEntity<ScheduleResponseDto> createSchedule(@RequestBody ScheduleRequestDto requestDto) {
+    public ResponseEntity<ScheduleResponseDto> createSchedule(@Valid @RequestBody ScheduleRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.createSchedule(requestDto));
     }
 
@@ -41,7 +42,7 @@ public class ScheduleController {
 
     // 일정 수정 api
     @PutMapping("/schedule/{id}")
-    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto requestDto) {
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable Long id, @Valid @RequestBody ScheduleRequestDto requestDto) {
         return ResponseEntity.ok(scheduleService.updateSchedule(id, requestDto));
     }
 

@@ -3,6 +3,7 @@ package com.sparta.myscheduler.controller;
 import com.sparta.myscheduler.dto.userSchedule.UserScheduleRequestDto;
 import com.sparta.myscheduler.dto.userSchedule.UserScheduleResponseDto;
 import com.sparta.myscheduler.service.UserScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserScheduleController {
 
 
     @PostMapping("/userSchedule")
-    public ResponseEntity<UserScheduleResponseDto> createUserSchedule(@RequestBody UserScheduleRequestDto requestDto) {
+    public ResponseEntity<UserScheduleResponseDto> createUserSchedule(@Valid @RequestBody UserScheduleRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                         .body( userScheduleService.createUserSchedule(requestDto));
     };
@@ -31,7 +32,7 @@ public class UserScheduleController {
     }
 
     @DeleteMapping("/userSchedule")
-    public ResponseEntity<Long> deleteUserSchedule(@RequestBody UserScheduleRequestDto requestDto) {
+    public ResponseEntity<Long> deleteUserSchedule(@Valid @RequestBody UserScheduleRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(userScheduleService.deleteUserSchedule(requestDto));
     }
