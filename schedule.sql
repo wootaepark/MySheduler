@@ -1,6 +1,6 @@
 CREATE TABLE `User` (
                         `id` BIGINT NOT NULL  AUTO_INCREMENT COMMENT '유저 아이디',
-                        `username` VARCHAR(255) NOT NULL COMMENT '유저 이름',
+                        `username` VARCHAR(255) UNIQUE NOT NULL COMMENT  '유저 이름',
                         `email` VARCHAR(255) NOT NULL COMMENT '유저 이메일',
                         `created_at` DATETIME NOT NULL DEFAULT NOW() COMMENT '유저 등록일',
                         `updated_at` DATETIME NOT NULL DEFAULT NOW() ON UPDATE NOW() COMMENT '유저 수정일',
