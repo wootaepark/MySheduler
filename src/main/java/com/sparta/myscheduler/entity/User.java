@@ -21,11 +21,14 @@ public class User extends Timestamped{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
@@ -33,6 +36,16 @@ public class User extends Timestamped{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user",cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList<>();
 
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
+
+    public User(String username, String password, String email, UserRoleEnum role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+    }
 
     public User(UserRequestDto requestDto){
         this.username = requestDto.getUsername();

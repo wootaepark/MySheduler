@@ -42,14 +42,16 @@ public class ScheduleController {
 
     // 일정 수정 api
     @PutMapping("/schedule/{id}")
-    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable Long id, @Valid @RequestBody ScheduleRequestDto requestDto) {
-        return ResponseEntity.ok(scheduleService.updateSchedule(id, requestDto));
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable Long id,
+                                                              @Valid @RequestBody ScheduleRequestDto requestDto,
+                                                              @CookieValue(value = "Authorization", defaultValue = "") String authorization) {
+        return ResponseEntity.ok(scheduleService.updateSchedule(id, requestDto, authorization));
     }
 
     // 일정 삭제 api
     @DeleteMapping("/schedule/{id}")
-    public ResponseEntity<Long> deleteSchedule(@PathVariable Long id) {
-        scheduleService.deleteSchedule(id);
+    public ResponseEntity<Long> deleteSchedule(@PathVariable Long id,@CookieValue(value = "Authorization", defaultValue = "") String authorization) {
+        scheduleService.deleteSchedule(id, authorization);
         return ResponseEntity.noContent().build();
     }
 
