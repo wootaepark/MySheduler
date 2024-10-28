@@ -1,14 +1,16 @@
 package com.sparta.myscheduler.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sparta.myscheduler.dto.user.UserRequestDto;
 import com.sparta.myscheduler.dto.user.UserResponseDto;
 import com.sparta.myscheduler.entity.User;
 import com.sparta.myscheduler.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -41,10 +43,7 @@ public class UserService {
     }
 
 
-    public Long deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("User id" + id + " not found"));
+    public void deleteUser(User user) {
         userRepository.delete(user);
-        return id;
     }
 }

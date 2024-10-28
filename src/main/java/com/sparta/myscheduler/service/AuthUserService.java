@@ -1,5 +1,10 @@
 package com.sparta.myscheduler.service;
 
+import java.util.Optional;
+
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.stereotype.Service;
+
 import com.sparta.myscheduler.config.PasswordEncoder;
 import com.sparta.myscheduler.dto.auth.LoginRequestDto;
 import com.sparta.myscheduler.dto.auth.SignupRequestDto;
@@ -7,12 +12,9 @@ import com.sparta.myscheduler.entity.User;
 import com.sparta.myscheduler.entity.UserRoleEnum;
 import com.sparta.myscheduler.jwt.JwtUtil;
 import com.sparta.myscheduler.repository.UserRepository;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
