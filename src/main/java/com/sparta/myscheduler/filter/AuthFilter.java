@@ -7,13 +7,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.sparta.myscheduler.entity.User;
+import com.sparta.myscheduler.exceptions.customExceptions.NotFoundEntityException;
+import com.sparta.myscheduler.exceptions.customExceptions.NotValidTokenException;
+import com.sparta.myscheduler.exceptions.enums.ExceptionCode;
 import com.sparta.myscheduler.jwt.JwtUtil;
 import com.sparta.myscheduler.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -22,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "AuthFilter")
 @Component
-@Order(2)
+@Order(3)
 public class AuthFilter implements Filter {
 
     private final UserRepository userRepository;
@@ -53,28 +55,27 @@ public class AuthFilter implements Filter {
 
             if (StringUtils.hasText(tokenValue)) { // 토큰이 존재하면 검증 시작
                 // JWT 토큰 substring
+                log.info("검증 시작");
                 String token = jwtUtil.substringToken(tokenValue);
 
                 // 토큰 검증
-                if (!jwtUtil.validateToken(token)) {
-                    throw new IllegalArgumentException("Token Error");
-                }
+                jwtUtil.validateToken(token);
+
 
                 // 토큰에서 사용자 정보 가져오기
                 Claims info = jwtUtil.getUserInfoFromToken(token);
 
                 User user = userRepository.findByEmail(info.getSubject()).orElseThrow(() ->
-                        new NullPointerException("Not Found User")
+                        new NotFoundEntityException(ExceptionCode.NOT_FOUND_USER)
                 );
 
                 request.setAttribute("user", user);
                 log.info("유저 인증 성공");
                 chain.doFilter(request, response); // 다음 Filter 로 이동
-            } else {
-                RequestDispatcher dispatcher = httpServletRequest.getRequestDispatcher("/error/unauthorized");
-                dispatcher.forward(request, response);
-
             }
+
+            else
+                throw new NotValidTokenException(ExceptionCode.HAS_NOT_TOKEN);
         }
     }
 
