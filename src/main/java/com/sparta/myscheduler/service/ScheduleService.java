@@ -13,12 +13,10 @@ import com.sparta.myscheduler.dto.schedule.ScheduleRequestDto;
 import com.sparta.myscheduler.dto.schedule.ScheduleResponseDto;
 import com.sparta.myscheduler.entity.Schedule;
 import com.sparta.myscheduler.exceptions.customExceptions.NotFoundEntityException;
-import com.sparta.myscheduler.exceptions.customExceptions.NotValidTokenException;
 import com.sparta.myscheduler.exceptions.enums.ExceptionCode;
 import com.sparta.myscheduler.jwt.JwtUtil;
 import com.sparta.myscheduler.repository.ScheduleRepository;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -53,11 +51,13 @@ public class ScheduleService {
         return new ScheduleResponseDto(schedule);
     }
 
+
+    // 다른 도메인의 update, delete 와 비교해보기 (도메인에 일정 역할 위임함)
     @Transactional
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto requestDto, String authorization) {
 
-        if(isAdmin(authorization)) {
-            Schedule schedule = findScheduleById(id);
+        Schedule schedule = findScheduleById(id);
+        if(!schedule.isAdmin(authorization,jwtUtil)) {
             schedule.update(requestDto);
             return new ScheduleResponseDto(schedule);
         }
@@ -67,33 +67,20 @@ public class ScheduleService {
 
 
     public void deleteSchedule(Long id, String authorization) {
-        if(isAdmin(authorization)) {
-            Schedule schedule = findScheduleById(id);
+        Schedule schedule = findScheduleById(id);
+        if(schedule.isAdmin(authorization, jwtUtil)) {
             scheduleRepository.delete(schedule);
         }
-
         else throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
     }
 
 
-    private Schedule findScheduleById(Long id) {
+    public Schedule findScheduleById(Long id) {
         return scheduleRepository.findById(id).orElseThrow(
                 () -> new NotFoundEntityException(ExceptionCode.NOT_FOUND_SCHEDULE)
         );
     }
 
-    private boolean isAdmin(String authorization) {
-        System.out.println("일정 서비스 시작");
-        String token = jwtUtil.substringToken(authorization);
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
-        String role = claims.get("auth", String.class);
 
-        System.out.println("role : " + role);
-        if (role == null || !role.equals("ADMIN")) {
-            throw new NotValidTokenException(ExceptionCode.NOT_ADMIN);
-        }
-        System.out.println("일정 서비스 종료");
-        return true;
-    }
 }

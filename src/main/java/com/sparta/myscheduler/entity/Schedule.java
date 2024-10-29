@@ -1,16 +1,28 @@
 package com.sparta.myscheduler.entity;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.sparta.myscheduler.dto.schedule.ScheduleRequestDto;
-import jakarta.persistence.*;
+import com.sparta.myscheduler.exceptions.customExceptions.NotValidTokenException;
+import com.sparta.myscheduler.exceptions.enums.ExceptionCode;
+import com.sparta.myscheduler.jwt.JwtUtil;
+
+import io.jsonwebtoken.Claims;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "schedule")
@@ -39,6 +51,7 @@ public class Schedule extends Timestamped {
     private List<UserSchedule> userSchedules = new ArrayList<>();
 
 
+
     public Schedule(ScheduleRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
@@ -64,5 +77,19 @@ public class Schedule extends Timestamped {
     public void addSchedule(User user) {
         UserSchedule userSchedule = new UserSchedule(user, this);
         userSchedules.add(userSchedule);
+    }
+
+    public boolean isAdmin(String authorization, JwtUtil jwtUtil) {
+        System.out.println("일정 서비스 시작");
+        String token = jwtUtil.substringToken(authorization);
+        Claims claims = jwtUtil.getUserInfoFromToken(token);
+        String role = claims.get("auth", String.class);
+
+        System.out.println("role : " + role);
+        if (role == null || !role.equals("ADMIN")) {
+            throw new NotValidTokenException(ExceptionCode.NOT_ADMIN);
+        }
+        System.out.println("일정 서비스 종료");
+        return true;
     }
 }
