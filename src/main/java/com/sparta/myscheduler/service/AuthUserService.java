@@ -2,7 +2,6 @@ package com.sparta.myscheduler.service;
 
 import java.util.Optional;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import com.sparta.myscheduler.config.PasswordEncoder;
@@ -10,6 +9,10 @@ import com.sparta.myscheduler.dto.auth.LoginRequestDto;
 import com.sparta.myscheduler.dto.auth.SignupRequestDto;
 import com.sparta.myscheduler.entity.User;
 import com.sparta.myscheduler.entity.UserRoleEnum;
+import com.sparta.myscheduler.exceptions.customExceptions.DuplicatedUserException;
+import com.sparta.myscheduler.exceptions.customExceptions.NotFoundEntityException;
+import com.sparta.myscheduler.exceptions.customExceptions.NotMatchPasswordException;
+import com.sparta.myscheduler.exceptions.enums.ExceptionCode;
 import com.sparta.myscheduler.jwt.JwtUtil;
 import com.sparta.myscheduler.repository.UserRepository;
 
@@ -34,27 +37,27 @@ public class AuthUserService {
         String password = passwordEncoder.encode(requestDto.getPassword());
 
         if(!requestDto.getPassword().equals(requestDto.getPasswordConfirm())) {
-            throw new BadCredentialsException("Passwords do not match");
+            throw new NotMatchPasswordException(ExceptionCode.NOT_MATCH_PASSWORD);
         }
 
         // 회원 중복 확인
         Optional<User> checkUsername = userRepository.findByUsername(username);
         if (checkUsername.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+            throw new DuplicatedUserException(ExceptionCode.DUPLICATED_USERNAME);
         }
 
         // email 중복확인
         String email = requestDto.getEmail();
         Optional<User> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
+            throw new DuplicatedUserException(ExceptionCode.DUPLICATED_EMAIL);
         }
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
         if (requestDto.isAdmin()) {
             if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+                throw new NotMatchPasswordException(ExceptionCode.ADMIN_PASSWORD_NOT_MATCH);
             }
             role = UserRoleEnum.ADMIN;
         }
@@ -70,11 +73,11 @@ public class AuthUserService {
 
         // 사용자 확인
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+                .orElseThrow(() -> new NotFoundEntityException(ExceptionCode.NOT_FOUND_USER));
 
         // 비밀번호 확인
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new NotMatchPasswordException(ExceptionCode.NOT_MATCH_PASSWORD);
         }
 
         // 인증 완료 JWT 생성 및 쿠키 저장 그리고 Response 객체에 추가해서 반환

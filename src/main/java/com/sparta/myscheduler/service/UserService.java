@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sparta.myscheduler.dto.user.UserRequestDto;
 import com.sparta.myscheduler.dto.user.UserResponseDto;
 import com.sparta.myscheduler.entity.User;
+import com.sparta.myscheduler.exceptions.customExceptions.NotFoundEntityException;
+import com.sparta.myscheduler.exceptions.enums.ExceptionCode;
 import com.sparta.myscheduler.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,9 +21,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserResponseDto createUser(UserRequestDto requestDto) {
-        return new UserResponseDto(userRepository.save(new User(requestDto)));
-    }
 
     public List<UserResponseDto> getAllUser() {
         List<User> users = userRepository.findAll();
@@ -31,7 +30,7 @@ public class UserService {
 
     public UserResponseDto getUser(Long id) {
         return new UserResponseDto(userRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("User id" + id + " not found")));
+                .orElseThrow(()->new NotFoundEntityException(ExceptionCode.NOT_FOUND_USER)));
     }
 
     @Transactional

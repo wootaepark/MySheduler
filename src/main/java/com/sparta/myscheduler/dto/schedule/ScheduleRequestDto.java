@@ -1,11 +1,13 @@
 package com.sparta.myscheduler.dto.schedule;
 
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
-
-import java.time.LocalDate;
 
 @Getter
 public class ScheduleRequestDto {
@@ -19,6 +21,7 @@ public class ScheduleRequestDto {
     private String content;
 
     @NotNull(message = "Date cannot be null")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate scheduleDate;
     
 }

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.sparta.myscheduler.entity.UserRoleEnum;
+import com.sparta.myscheduler.exceptions.customExceptions.NotValidTokenException;
+import com.sparta.myscheduler.exceptions.enums.ExceptionCode;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -86,25 +88,27 @@ public class JwtUtil {
             return tokenValue.substring(BEARER_PREFIX.length());
         }
         log.error("Not Found Token");
-        throw new NullPointerException("Not Found Token");
+        throw new NotValidTokenException(ExceptionCode.NOT_SUPPORT_TOKEN);
     }
 
     // 토큰 검증
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token); // 서명이 있는 jwt 파싱 (없는 경우 parseClaimsJwt)
-            return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효 하지 않은 JWT 서명 입니다.");
+            throw new NotValidTokenException(ExceptionCode.NOT_VALID_TOKEN);
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token, 유효 기간 만료된 JWT 입니다.");
+            throw new NotValidTokenException(ExceptionCode.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원 되지 않는 JWT 토큰입니다.");
+            throw new NotValidTokenException(ExceptionCode.NOT_SUPPORT_TOKEN);
         } catch (IllegalArgumentException e) {
             log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+            throw new NotValidTokenException(ExceptionCode.WRONG_TOKEN);
         }
 
-        return false;
     }
 
     // JWT 사용자 정보 가져오기

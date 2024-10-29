@@ -1,12 +1,5 @@
 package com.sparta.myscheduler.service;
 
-import com.sparta.myscheduler.dto.schedule.ScheduleRequestDto;
-import com.sparta.myscheduler.dto.schedule.ScheduleResponseDto;
-import com.sparta.myscheduler.entity.Schedule;
-import com.sparta.myscheduler.jwt.JwtUtil;
-import com.sparta.myscheduler.repository.ScheduleRepository;
-import io.jsonwebtoken.Claims;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +8,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.sparta.myscheduler.dto.schedule.ScheduleRequestDto;
+import com.sparta.myscheduler.dto.schedule.ScheduleResponseDto;
+import com.sparta.myscheduler.entity.Schedule;
+import com.sparta.myscheduler.exceptions.customExceptions.NotFoundEntityException;
+import com.sparta.myscheduler.exceptions.customExceptions.NotValidTokenException;
+import com.sparta.myscheduler.exceptions.enums.ExceptionCode;
+import com.sparta.myscheduler.jwt.JwtUtil;
+import com.sparta.myscheduler.repository.ScheduleRepository;
+
+import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +79,7 @@ public class ScheduleService {
 
     private Schedule findScheduleById(Long id) {
         return scheduleRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Schedule id : " + id + " not found")
+                () -> new NotFoundEntityException(ExceptionCode.NOT_FOUND_SCHEDULE)
         );
     }
 
@@ -86,7 +91,7 @@ public class ScheduleService {
 
         System.out.println("role : " + role);
         if (role == null || !role.equals("ADMIN")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Admins only.");
+            throw new NotValidTokenException(ExceptionCode.NOT_ADMIN);
         }
         System.out.println("일정 서비스 종료");
         return true;

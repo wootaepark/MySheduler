@@ -10,7 +10,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.sparta.myscheduler.exceptions.customExceptions.DuplicatedUserException;
 import com.sparta.myscheduler.exceptions.customExceptions.NotFoundEntityException;
+import com.sparta.myscheduler.exceptions.customExceptions.NotHaveAdminException;
+import com.sparta.myscheduler.exceptions.customExceptions.NotMatchPasswordException;
 import com.sparta.myscheduler.exceptions.customExceptions.NotValidTokenException;
 import com.sparta.myscheduler.exceptions.dto.NotValidRequestParameter;
 import com.sparta.myscheduler.exceptions.dto.ResponseExceptionDto;
@@ -37,7 +40,30 @@ public class GlobalExceptionHandler {
         log.error("{}: {}", exceptionCode, exceptionCode.getMessage());
         return ResponseEntity.status(exceptionCode.getHttpStatus())
             .body(makeResponseExceptionCode(exceptionCode));
+    }
 
+    @ExceptionHandler(NotHaveAdminException.class)
+    public ResponseEntity<Object> handleNotHaveAdminException(NotHaveAdminException e) {
+        ExceptionCode exceptionCode = e.getExceptionCode();
+        log.error("{}: {}", exceptionCode, exceptionCode.getMessage());
+        return ResponseEntity.status(exceptionCode.getHttpStatus())
+            .body(makeResponseExceptionCode(exceptionCode));
+    }
+
+    @ExceptionHandler(NotMatchPasswordException.class)
+    public ResponseEntity<Object> handleNotMatchPasswordException(NotMatchPasswordException e) {
+        ExceptionCode exceptionCode = e.getExceptionCode();
+        log.error("{}: {}", exceptionCode, exceptionCode.getMessage());
+        return ResponseEntity.status(exceptionCode.getHttpStatus())
+            .body(makeResponseExceptionCode(exceptionCode));
+    }
+
+    @ExceptionHandler(DuplicatedUserException.class)
+    public ResponseEntity<Object> handleDuplicatedUserException(DuplicatedUserException e) {
+        ExceptionCode exceptionCode = e.getExceptionCode();
+        log.error("{}: {}", exceptionCode, exceptionCode.getMessage());
+        return ResponseEntity.status(exceptionCode.getHttpStatus())
+            .body(makeResponseExceptionCode(exceptionCode));
 
     }
 
@@ -57,6 +83,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(exceptionCode.getHttpStatus())
             .body(makeNotValidRequestParameter(e, exceptionCode));
     }
+
 
     private NotValidRequestParameter makeNotValidRequestParameter(BindException e,
         ExceptionCode exceptionCode) {
